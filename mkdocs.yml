@@ -1,0 +1,10 @@
+site_name: Documentation APICarto
+pages:
+  - Home: 'index.md'
+  - Datastore:
+    - 'Enregistrement' : 'datastore/enregistrement.md'
+    - 'Backend' : 'datastore/admin.md'
+  - Zonage:
+    - 'Cadastre' : 'zonage/cadastre.md'
+    - 'AOC' : 'zonage/aoc.md'
+    - 'Politique de la ville' : 'zonage/poliqueville.md'
