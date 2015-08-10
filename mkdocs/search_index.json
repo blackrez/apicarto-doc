@@ -1,0 +1,69 @@
+{
+    "docs": [
+        {
+            "location": "/", 
+            "text": "Bienvenue sur la documentation d'APICarto\n\n\nIntroduction\n\n\nAPICarto est un projet afin de favoriser et d'encourager l'utilisation de donn\u00e9es cartographques dans les d\u00e9marches de d\u00e9mat\u00e9rialisations administratives.\nLe projet est d\u00e9coup\u00e9 en diff\u00e9rents composants :\n\n\n\n\nDatastore, afin d'enregistrer les dessins d'un usager.\n\n\nZonage, un service d'interrogation de diff\u00e9rentes couches cartographiques\n\n\n\n\nStatut du projet\n\n\nLe projet est actuellement support\u00e9 par le SGMAP et l'IGN.", 
+            "title": "Home"
+        }, 
+        {
+            "location": "/#bienvenue-sur-la-documentation-dapicarto", 
+            "text": "", 
+            "title": "Bienvenue sur la documentation d'APICarto"
+        }, 
+        {
+            "location": "/#introduction", 
+            "text": "APICarto est un projet afin de favoriser et d'encourager l'utilisation de donn\u00e9es cartographques dans les d\u00e9marches de d\u00e9mat\u00e9rialisations administratives.\nLe projet est d\u00e9coup\u00e9 en diff\u00e9rents composants :   Datastore, afin d'enregistrer les dessins d'un usager.  Zonage, un service d'interrogation de diff\u00e9rentes couches cartographiques", 
+            "title": "Introduction"
+        }, 
+        {
+            "location": "/#statut-du-projet", 
+            "text": "Le projet est actuellement support\u00e9 par le SGMAP et l'IGN.", 
+            "title": "Statut du projet"
+        }, 
+        {
+            "location": "/datastore/enregistrement/", 
+            "text": "Datastore - enregistrement d'un dessin\n\n\nIntroduction\n\n\nDans le but de faciliter l'int\u00e9gration de l'enregistrement de dessin fourni par un usager, un web service est mis en place afin de pouvoir enregistrer des g\u00e9om\u00e9tries au format GeoJson.\nCe service n\u00e9cessite une clef d'API \u00e0 demander au SGMAP.\n\n\nCe composant est sous licence AGPL v3 et disponible : https://github.com/blackrez/apicarto-datastore\n\n\nAPI (version beta)\n\n\nURL de d\u00e9v\u00e9loppement\n\n\nhttp://apicarto-dev.sgmap.fr/store/api/v2/datastore\n\n\nEnregistrement d'une g\u00e9om\u00e9trie.\n\n\nURL\n : http://apicarto-dev.sgmap.fr/store/api/v2/datastore/draw\n\n\nMethode\n : POST\n\n\nParam\n : geojson\n\n\nAuthenfication n\u00e9cessaire\n : oui\n\n\nR\u00e9ponse\n :\n\n\n\n\nCode HTTP\n :  200\n\n\nJSON\n : \n{reference : ID}\n\n\n\n\nLe param\u00e8tre geojson doit contenir un fichier GeoJson valide, il peut \u00eatre de n'importe quel type qui respecte la sp\u00e9cification. Dans les cas de g\u00e9om\u00e9tries multiples, il est recommand\u00e9 d'envoyer une collection de g\u00e9om\u00e9trie au lieu de faire fusionner les g\u00e9om\u00e9tries.\nLe champ \nproperties\n du GeoJson permet l'utilisation de n'importe quel champ.\n\n\nL'ID servira \u00e0 r\u00e9cup\u00e9rer la ou les g\u00e9om\u00e9tries.\n\n\nTout autre r\u00e9ponse doit \u00eatre consid\u00e9r\u00e9 comme une erreur et la g\u00e9om\u00e9trie n'est pas enregistr\u00e9e.\n\n\n\n\nExemple:\n\n\n$ curl -X POST -H \nAuthorization: Token 77def68e703a6bc65c0b9e4fa426306bc1f384d9\n -H \nCache-Control: no-cache\n -H -H \nContent-Type: application/x-www-form-urlencoded\n -d 'geojson=%7B%22type%22%3A%22Feature%22%2C%22properties%22%3A%7B%7D%2C%22geometry%22%3A%7B%22type%22%3A%22Polygon%22%2C%22coordinates%22%3A%5B%5B%5B4.839992523193359%2C43.95488856092349%5D%2C%5B4.8415374755859375%2C43.950316046754146%5D%2C%5B4.821968078613281%2C43.947597087764585%5D%2C%5B4.821624755859375%2C43.95167547960693%5D%2C%5B4.839992523193359%2C43.95488856092349%5D%5D%5D%7D%7D' 'http://apicarto-dev.sgmap.fr/store/store/api/v2/datastore/draw'\n\n{\nreference\n: \nOSHPPY2G\n}\n\n\n\n\nInt\u00e9gration avec leaflet et JQuery\n\n\nNB il est possible d'utiliser d'autres librairies comme OpenLayers, mais seul Leaflet est support\u00e9 officiellement\n\n\nAjout des librairies n\u00e9cessaires\n\n\nDans cet exemple, nous allons utiliser les plugins Leaflet.Draw (pour le dessin) et leaflet-geodesy (pour le calcul \u00e0 la vol\u00e9e de surface).\n\n\nlink rel=\nstylesheet\n type=\ntext/css\n href=\nhttp://leaflet.github.io/Leaflet.draw/leaflet.draw.css\n\n\nlink rel=\nstylesheet\n type=\ntext/css\n href=\nhttp://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css\n\n[...]\n\nscript src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-geodesy/v0.1.0/leaflet-geodesy.js'\n/script\n\n\nscript src=\nhttps://code.jquery.com/jquery-2.1.3.js\n/script\n\n\nscript src=\nhttp://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js\n/script\n\n\nscript src=\nhttp://leaflet.github.io/Leaflet.draw/leaflet.draw.js\n/script\n\n\n\n\n\nApr\u00e8s une configuration classique de Leaflet.Draw (un exemple complet est visible ici : https://github.com/sgmap/apicarto-client/blob/master/examples/draw/demo.js )\n\n\nwindow.featureCollection = new Object()\nwindow.featureCollection.type = 'FeatureCollection';\nwindow.featureCollection.features = new Array();\n\nmap.on(\ndraw:created\n, function(e) {\n  var layer;\n  layer = e.layer;\n  drawnItems.addLayer(layer);\n  window.featureCollection.features.push(layer.toGeoJSON());\n)}\n\n\n\n\nAvec le plugin Leaflet.Draw, nous cr\u00e9ons un dessin qui est ajout\u00e9 \u00e0 une collection de polygones.\n\n\nfunction store() {\n  return $.ajax(\nhttp://apicarto.coremaps.com/store/api/v2/datastore/draw\n, {\n    method: 'POST',\n    crossDomain: true,\n    contentType: 'application/x-www-form-urlencoded',\n    headers: {\n      'AUTHORIZATION': 'VOTRE CLEF D'API'\n    },\n    data: {\n      geojson: JSON.stringify(window.featureCollection)\n    }\n  }).done(function(data) {\n    console.log('R\u00e9f\u00e9rences pour r\u00e9cup\u00e9rer le fichier : ' + data.reference);\n  });\n};", 
+            "title": "Enregistrement"
+        }, 
+        {
+            "location": "/datastore/enregistrement/#datastore-enregistrement-dun-dessin", 
+            "text": "", 
+            "title": "Datastore - enregistrement d'un dessin"
+        }, 
+        {
+            "location": "/datastore/enregistrement/#introduction", 
+            "text": "Dans le but de faciliter l'int\u00e9gration de l'enregistrement de dessin fourni par un usager, un web service est mis en place afin de pouvoir enregistrer des g\u00e9om\u00e9tries au format GeoJson.\nCe service n\u00e9cessite une clef d'API \u00e0 demander au SGMAP.  Ce composant est sous licence AGPL v3 et disponible : https://github.com/blackrez/apicarto-datastore", 
+            "title": "Introduction"
+        }, 
+        {
+            "location": "/datastore/enregistrement/#api-version-beta", 
+            "text": "URL de d\u00e9v\u00e9loppement  http://apicarto-dev.sgmap.fr/store/api/v2/datastore  Enregistrement d'une g\u00e9om\u00e9trie.  URL  : http://apicarto-dev.sgmap.fr/store/api/v2/datastore/draw  Methode  : POST  Param  : geojson  Authenfication n\u00e9cessaire  : oui  R\u00e9ponse  :   Code HTTP  :  200  JSON  :  {reference : ID}   Le param\u00e8tre geojson doit contenir un fichier GeoJson valide, il peut \u00eatre de n'importe quel type qui respecte la sp\u00e9cification. Dans les cas de g\u00e9om\u00e9tries multiples, il est recommand\u00e9 d'envoyer une collection de g\u00e9om\u00e9trie au lieu de faire fusionner les g\u00e9om\u00e9tries.\nLe champ  properties  du GeoJson permet l'utilisation de n'importe quel champ.  L'ID servira \u00e0 r\u00e9cup\u00e9rer la ou les g\u00e9om\u00e9tries.  Tout autre r\u00e9ponse doit \u00eatre consid\u00e9r\u00e9 comme une erreur et la g\u00e9om\u00e9trie n'est pas enregistr\u00e9e.   Exemple:  $ curl -X POST -H  Authorization: Token 77def68e703a6bc65c0b9e4fa426306bc1f384d9  -H  Cache-Control: no-cache  -H -H  Content-Type: application/x-www-form-urlencoded  -d 'geojson=%7B%22type%22%3A%22Feature%22%2C%22properties%22%3A%7B%7D%2C%22geometry%22%3A%7B%22type%22%3A%22Polygon%22%2C%22coordinates%22%3A%5B%5B%5B4.839992523193359%2C43.95488856092349%5D%2C%5B4.8415374755859375%2C43.950316046754146%5D%2C%5B4.821968078613281%2C43.947597087764585%5D%2C%5B4.821624755859375%2C43.95167547960693%5D%2C%5B4.839992523193359%2C43.95488856092349%5D%5D%5D%7D%7D' 'http://apicarto-dev.sgmap.fr/store/store/api/v2/datastore/draw'\n\n{ reference :  OSHPPY2G }", 
+            "title": "API (version beta)"
+        }, 
+        {
+            "location": "/datastore/enregistrement/#integration-avec-leaflet-et-jquery", 
+            "text": "NB il est possible d'utiliser d'autres librairies comme OpenLayers, mais seul Leaflet est support\u00e9 officiellement  Ajout des librairies n\u00e9cessaires  Dans cet exemple, nous allons utiliser les plugins Leaflet.Draw (pour le dessin) et leaflet-geodesy (pour le calcul \u00e0 la vol\u00e9e de surface).  link rel= stylesheet  type= text/css  href= http://leaflet.github.io/Leaflet.draw/leaflet.draw.css  link rel= stylesheet  type= text/css  href= http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css \n[...] script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-geodesy/v0.1.0/leaflet-geodesy.js' /script  script src= https://code.jquery.com/jquery-2.1.3.js /script  script src= http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js /script  script src= http://leaflet.github.io/Leaflet.draw/leaflet.draw.js /script   Apr\u00e8s une configuration classique de Leaflet.Draw (un exemple complet est visible ici : https://github.com/sgmap/apicarto-client/blob/master/examples/draw/demo.js )  window.featureCollection = new Object()\nwindow.featureCollection.type = 'FeatureCollection';\nwindow.featureCollection.features = new Array();\n\nmap.on( draw:created , function(e) {\n  var layer;\n  layer = e.layer;\n  drawnItems.addLayer(layer);\n  window.featureCollection.features.push(layer.toGeoJSON());\n)}  Avec le plugin Leaflet.Draw, nous cr\u00e9ons un dessin qui est ajout\u00e9 \u00e0 une collection de polygones.  function store() {\n  return $.ajax( http://apicarto.coremaps.com/store/api/v2/datastore/draw , {\n    method: 'POST',\n    crossDomain: true,\n    contentType: 'application/x-www-form-urlencoded',\n    headers: {\n      'AUTHORIZATION': 'VOTRE CLEF D'API'\n    },\n    data: {\n      geojson: JSON.stringify(window.featureCollection)\n    }\n  }).done(function(data) {\n    console.log('R\u00e9f\u00e9rences pour r\u00e9cup\u00e9rer le fichier : ' + data.reference);\n  });\n};", 
+            "title": "Int\u00e9gration avec leaflet et JQuery"
+        }, 
+        {
+            "location": "/datastore/admin/", 
+            "text": "", 
+            "title": "Backend"
+        }, 
+        {
+            "location": "/zonage/cadastre/", 
+            "text": "", 
+            "title": "Cadastre"
+        }, 
+        {
+            "location": "/zonage/aoc/", 
+            "text": "", 
+            "title": "AOC"
+        }, 
+        {
+            "location": "/zonage/poliqueville/", 
+            "text": "", 
+            "title": "Politique de la ville"
+        }
+    ]
+}

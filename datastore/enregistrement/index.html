@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+
+	<title>Enregistrement - Documentation APICarto</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Documentation APICarto</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="../..">Home</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown active">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Datastore <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li class="active">
+    <a href="./">Enregistrement</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../admin/">Backend</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Zonage <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../zonage/cadastre/">Cadastre</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../zonage/aoc/">AOC</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../zonage/poliqueville/">Politique de la ville</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                </ul>
+            
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                
+                    <li >
+                        <a rel="next" href="../..">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../admin/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#datastore-enregistrement-dun-dessin">Datastore - enregistrement d'un dessin</a></li>
+        
+            <li><a href="#introduction">Introduction</a></li>
+        
+            <li><a href="#api-version-beta">API (version beta)</a></li>
+        
+            <li><a href="#integration-avec-leaflet-et-jquery">Intégration avec leaflet et JQuery</a></li>
+        
+    
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="datastore-enregistrement-dun-dessin">Datastore - enregistrement d'un dessin</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Dans le but de faciliter l'intégration de l'enregistrement de dessin fourni par un usager, un web service est mis en place afin de pouvoir enregistrer des géométries au format GeoJson.
+Ce service nécessite une clef d'API à demander au SGMAP.</p>
+<p>Ce composant est sous licence AGPL v3 et disponible : https://github.com/blackrez/apicarto-datastore</p>
+<h2 id="api-version-beta">API (version beta)</h2>
+<h3 id="url-de-developpement">URL de dévéloppement</h3>
+<p>http://apicarto-dev.sgmap.fr/store/api/v2/datastore</p>
+<h3 id="enregistrement-dune-geometrie">Enregistrement d'une géométrie.</h3>
+<p><strong>URL</strong> : http://apicarto-dev.sgmap.fr/store/api/v2/datastore/draw</p>
+<p><strong>Methode</strong> : POST</p>
+<p><strong>Param</strong> : geojson</p>
+<p><strong>Authenfication nécessaire</strong> : oui</p>
+<p><strong>Réponse</strong> :</p>
+<ul>
+<li><strong>Code HTTP</strong> :  200</li>
+<li><strong>JSON</strong> : <code>{reference : ID}</code></li>
+</ul>
+<p>Le paramètre geojson doit contenir un fichier GeoJson valide, il peut être de n'importe quel type qui respecte la spécification. Dans les cas de géométries multiples, il est recommandé d'envoyer une collection de géométrie au lieu de faire fusionner les géométries.
+Le champ <code>properties</code> du GeoJson permet l'utilisation de n'importe quel champ.</p>
+<p>L'ID servira à récupérer la ou les géométries.</p>
+<p>Tout autre réponse doit être considéré comme une erreur et la géométrie n'est pas enregistrée.</p>
+<hr />
+<p>Exemple:</p>
+<pre><code>$ curl -X POST -H &quot;Authorization: Token 77def68e703a6bc65c0b9e4fa426306bc1f384d9&quot; -H &quot;Cache-Control: no-cache&quot; -H -H &quot;Content-Type: application/x-www-form-urlencoded&quot; -d 'geojson=%7B%22type%22%3A%22Feature%22%2C%22properties%22%3A%7B%7D%2C%22geometry%22%3A%7B%22type%22%3A%22Polygon%22%2C%22coordinates%22%3A%5B%5B%5B4.839992523193359%2C43.95488856092349%5D%2C%5B4.8415374755859375%2C43.950316046754146%5D%2C%5B4.821968078613281%2C43.947597087764585%5D%2C%5B4.821624755859375%2C43.95167547960693%5D%2C%5B4.839992523193359%2C43.95488856092349%5D%5D%5D%7D%7D' 'http://apicarto-dev.sgmap.fr/store/store/api/v2/datastore/draw'
+
+{&quot;reference&quot;: &quot;OSHPPY2G&quot;}
+</code></pre>
+
+<h2 id="integration-avec-leaflet-et-jquery">Intégration avec leaflet et JQuery</h2>
+<p><em>NB il est possible d'utiliser d'autres librairies comme OpenLayers, mais seul Leaflet est supporté officiellement</em></p>
+<h3 id="ajout-des-librairies-necessaires">Ajout des librairies nécessaires</h3>
+<p>Dans cet exemple, nous allons utiliser les plugins Leaflet.Draw (pour le dessin) et leaflet-geodesy (pour le calcul à la volée de surface).</p>
+<pre><code class="html">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;http://leaflet.github.io/Leaflet.draw/leaflet.draw.css&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css&quot;&gt;
+[...]
+&lt;script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-geodesy/v0.1.0/leaflet-geodesy.js'&gt;&lt;/script&gt;
+&lt;script src=&quot;https://code.jquery.com/jquery-2.1.3.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://leaflet.github.io/Leaflet.draw/leaflet.draw.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+
+<p>Après une configuration classique de Leaflet.Draw (un exemple complet est visible ici : https://github.com/sgmap/apicarto-client/blob/master/examples/draw/demo.js )</p>
+<pre><code class="javascript">window.featureCollection = new Object()
+window.featureCollection.type = 'FeatureCollection';
+window.featureCollection.features = new Array();
+
+map.on(&quot;draw:created&quot;, function(e) {
+  var layer;
+  layer = e.layer;
+  drawnItems.addLayer(layer);
+  window.featureCollection.features.push(layer.toGeoJSON());
+)}
+</code></pre>
+
+<p>Avec le plugin Leaflet.Draw, nous créons un dessin qui est ajouté à une collection de polygones.</p>
+<pre><code class="javascript">function store() {
+  return $.ajax(&quot;http://apicarto.coremaps.com/store/api/v2/datastore/draw&quot;, {
+    method: 'POST',
+    crossDomain: true,
+    contentType: 'application/x-www-form-urlencoded',
+    headers: {
+      'AUTHORIZATION': 'VOTRE CLEF D'API'
+    },
+    data: {
+      geojson: JSON.stringify(window.featureCollection)
+    }
+  }).done(function(data) {
+    console.log('Références pour récupérer le fichier : ' + data.reference);
+  });
+};
+</code></pre></div>
+            
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
