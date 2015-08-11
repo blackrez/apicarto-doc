@@ -67,8 +67,142 @@ Dans cet exemple, nous allons utiliser les plugins Leaflet.Draw (pour le dessin)
 <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 <script src="http://leaflet.github.io/Leaflet.draw/leaflet.draw.js"></script>
 ```
+### Configuration de Leaflet et de Leaflet.draw
 
 Après une configuration classique de Leaflet.Draw (un exemple complet est visible ici : https://github.com/sgmap/apicarto-client/blob/master/examples/draw/demo.js )
+
+L'ensemble de ce premier block permet dde franciser Leaflet.Draw qui n'a pas de support multi-langues par défaut.
+
+```javascript
+L.drawLocal.draw.toolbar.buttons.polygon = 'Dessiner un polygone';
+L.drawLocal.draw.toolbar.actions.title = "Annule le dessin en cours";
+L.drawLocal.draw.toolbar.actions.text = "Annuler";
+L.drawLocal.draw.toolbar.undo.text = "Supprimer le dernier point";
+L.drawLocal.draw.toolbar.undo.title = "Supprime le dernier point dessiné";
+L.drawLocal.draw.handlers.polygon.tooltip.start = "Cliquer pour commencer le dessin";
+L.drawLocal.draw.handlers.polygon.tooltip.cont = "Cliquer pour continuer le dessin";
+L.drawLocal.draw.handlers.polygon.tooltip.end = "Cliquer sur le premier point pour finaliser votre dessin";
+L.drawLocal.edit.toolbar.actions.save.title = "Valide les modifications";
+L.drawLocal.edit.toolbar.actions.save.text = "Valider les modifications";
+L.drawLocal.edit.toolbar.actions.cancel.title = "Annule les modifications";
+L.drawLocal.edit.toolbar.actions.cancel.text = "Annuler les modifications";
+L.drawLocal.edit.handlers.edit.tooltip.text = "Déplacer les points pour éditer le dessin";
+L.drawLocal.edit.handlers.edit.tooltip.subtext = "Cliquer sur 'annuler' pour annuler les changements";
+L.drawLocal.edit.toolbar.buttons.edit = "Édition du dessin";
+L.drawLocal.edit.toolbar.buttons.editDisabled = "Aucun dessin à éditer";
+L.drawLocal.edit.toolbar.buttons.removeDisabled = "Aucun dessin à supprimer";
+L.drawLocal.edit.toolbar.buttons.remove = "Supprimer le dessin";
+L.drawLocal.edit.handlers.remove.tooltip.text = "Cliquer sur le dessin pour le supprimer";
+L.drawLocal.edit.handlers.remove.tooltip.subtext = "Cliquer sur 'annuler' pour annuler la suppression";
+```
+
+Ensuite on initialise Leaflet en ajoutant les couches nécessaires.
+
+```javascript
+mapId = "map";
+layers = new Array;
+window.mapcontrol = false;
+OSM = L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
+  attribution: "&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a>"
+});
+scanWmtsUrl = 'http://apicarto-dev.sgmap.fr/maps' + '/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg';
+ortho = L.tileLayer(scanWmtsUrl, {
+  attribution: "&copy; <a href=\"http://www.ign.fr/\">IGN</a>"
+});
+cadWmtsUrl = 'http://apicarto-dev.sgmap.fr/maps' + '/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=CADASTRALPARCELS.PARCELS&STYLE=bdparcellaire_b&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fpng&TRANSPARENT=TRUE';
+cad = L.tileLayer(cadWmtsUrl, {
+  attribution: "&copy; <a href=\"http://www.ign.fr/\">IGN</a>",
+  transparent: true,
+  format: 'image/png'
+});
+
+map = L.map(mapId, {
+  center: new L.LatLng(44.727006, -0.475243),
+  zoom: 13,
+  layers: [OSM]
+});
+window.map = map;
+baseMap = {
+  "IGN Orthophto": ortho,
+  "OpenStreetMap": OSM
+};
+overlayMaps = {
+  "Ign Cadastre": cad
+};
+L.control.layers(baseMap, overlayMaps).addTo(map);
+```
+
+On initialise Leaflet.draw, c'est ici qu'on configure le module de dessin.
+
+Pour plus d'informations sur les callbacks et les options, se référer à la documentation officielle du plugins https://github.com/Leaflet/Leaflet.draw.
+
+```javascript
+drawnItems = new L.FeatureGroup();
+map.addLayer(drawnItems);
+drawControl = new L.Control.Draw({
+  position: "topright",
+  draw: {
+    polygon: {
+      shapeOptions: {
+        color: "purple"
+      },
+      allowIntersection: false,
+      drawError: {
+        color: "orange",
+        timeout: 1000
+      },
+      showArea: false,
+    },
+    marker: false,
+    polyline: false,
+    rectangle: false,
+    circle: false
+  },
+  edit: {
+    featureGroup: drawnItems
+  }
+});
+map.addControl(drawControl);
+L.control.scale({
+  imperial: false
+}).addTo(map);
+```
+
+On ajoute plusieurs callbacks. Le but de chaque callback est de sauvegarder l'état du dessin dans une variable dans le navigateur de calculer la surface du dessin.
+
+```javascript
+map.on("draw:created", function(e) {
+  var layer;
+  drawnItems.clearLayers();
+  layer = e.layer;
+  drawnItems.addLayer(layer);
+  window.data = layer.toGeoJSON();
+  $('#parcelle-area').html('<span id=parcelle-area>' + (LGeo.area(e.layer) / 10000).toFixed(4) + ' ha</span>');
+});
+map.on("draw:edited", function(e) {
+  drawnItems.clearLayers();
+  e.layers.eachLayer(function(layer) {
+    drawnItems.addLayer(layer);
+    window.data = layer.toGeoJSON();
+    $('#parcelle-area').html('<span id=parcelle-area>' + (LGeo.area(layer) / 10000).toFixed(4) + ' ha</span>');
+  });
+
+});
+```
+
+Les 2 callbacks suivants permettent de gérer la suppression d'un dessin.
+
+```javascript
+map.on("draw:deletestop", function(e) {
+  window.data = {};
+  $('#parcelle-area').html('<span id=parcelle-area></span>');
+});
+map.on("draw.started", function(e) {
+  map.removeLayer(drawnItems);
+});
+```
+
+Avec le plugin Leaflet.Draw, nous créons un dessin qui est ajouté à une collection de polygones. Le dessin est désormais comme une collections de polygones.
 
 
 ```javascript
@@ -84,8 +218,7 @@ map.on("draw:created", function(e) {
 )}
 ```
 
-Avec le plugin Leaflet.Draw, nous créons un dessin qui est ajouté à une collection de polygones.
-
+Enfin la fonction store permet d'enregistrer le dessin en envoyant le geojson au datastore.
 
 ```javascript
 function store() {

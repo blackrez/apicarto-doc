@@ -138,11 +138,70 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
+        <li class="main active"><a href="#zonage-interrogation-des-zones-aocigp">Zonage - interrogation des Zones AOC/IGP</a></li>
+        
+            <li><a href="#introduction">Introduction</a></li>
+        
+            <li><a href="#api-version-beta">API (version beta)</a></li>
+        
+    
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-</div>
+<h1 id="zonage-interrogation-des-zones-aocigp">Zonage - interrogation des Zones AOC/IGP</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Le service d'interrogation du cadastre permet de faire le croisement entre un polygone et la couche des AOC/IGP.
+Les données proviennent de France Agrimer et de l'INAO, pour l'instant seul la Gironde est disponible.
+Ce service ne nécessite pas de clef d'API dans sa version beta.</p>
+<h2 id="api-version-beta">API (version beta)</h2>
+<h3 id="url-de-developpement">URL de dévéloppement</h3>
+<p>http://apicarto-dev.sgmap.fr/aoc/api/beta/</p>
+<h3 id="croisement-geojson-couche-du-cadastre">Croisement geojson couche du cadastre</h3>
+<p><strong>URL</strong> : http://apicarto-dev.sgmap.fr/aoc/api/beta/in</p>
+<p><strong>Methode</strong> : POST</p>
+<p><strong>Param</strong> : geom</p>
+<p><strong>Authenfication nécessaire</strong> : non</p>
+<p><strong>Réponse</strong> :</p>
+<ul>
+<li><strong>Code HTTP</strong> :  200</li>
+<li><strong>JSON</strong> :</li>
+</ul>
+<pre><code>{&quot;type&quot;:&quot;FeatureCollection&quot;,
+  &quot;features&quot;:
+      [{&quot;type&quot;:&quot;Feature&quot;,
+      &quot;geometry&quot;:
+        {&quot;type&quot;:&quot;MultiPolygon&quot;,&quot;coordinates&quot;:[...]},
+      &quot;properties&quot;:{
+        &quot;area_inter&quot;:xxx,
+        &quot;appellation&quot;:&quot;XXX&quot;,&quot;id_uni&quot;:&quot;X-XX-XXXX&quot;
+      }
+  ]}
+}
+</code></pre>
+
+<p>Le paramètre geom est un geojson valide qui permettra de récupérer un geojson avec les polygones des aires AOC/IGP et la surface de l'intersection entre la parcelle et le geojson. Le champs properties est complété par le nom de l'appelation et l'identifiant fourni par France Agrimer.</p>
+<h3 id="exemple-avec-jquery">Exemple avec Jquery</h3>
+<p>On considère qu'il y a une instance de Leaflet est active sur la page.</p>
+<p>La variable data contient un objet geojson qui est transformer en Json par la fonction JSON.stringify.</p>
+<p>Dans le callback, on affiche les parcelles concernées sur la carte leaflet an ajoutant un layers leaflet.</p>
+<pre><code class="javascript">onEachFeatureaoc = function(feature, layer) {
+  $('#parcelle-info tbody:last').after('&lt;tr&gt;commune:' + feature.properties.nom_com + '&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;' + feature.properties.numero + '&lt;/td&gt;&lt;td&gt;' + feature.properties.feuille + '&lt;/td&gt;&lt;td&gt;' + feature.properties.section + '&lt;/td&gt;&lt;td&gt;' + feature.properties.surface_intersection + '&lt;/td&gt;&lt;/tr&gt;');
+  layer.bindPopup('surface parcelle : ' + feature.properties.area + '&lt;br&gt;');
+};
+
+$('#testaoc').click(function() {
+  return $.post('http://apicarto.coremaps.com/aoc/api/beta/aoc/in', {
+    contentType: &quot;application/json&quot;,
+    dataType: 'json',
+    geom: JSON.stringify(window.data)
+  }).done(function(data) {
+    var layer;
+    $('#parcelle-aoc').html = &quot;&quot;;
+
+  });
+});
+</code></pre></div>
             
         </div>
 

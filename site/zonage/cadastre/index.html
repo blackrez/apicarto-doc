@@ -138,11 +138,77 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
+        <li class="main active"><a href="#zonage-interrogation-du-cadastre">Zonage - interrogation du cadastre</a></li>
+        
+            <li><a href="#introduction">Introduction</a></li>
+        
+            <li><a href="#api-version-beta">API (version beta)</a></li>
+        
+    
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-</div>
+<h1 id="zonage-interrogation-du-cadastre">Zonage - interrogation du cadastre</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Le service d'interrogation du cadastre permet de faire le croisement entre un polygone et la couche vectoriel du cadastre.
+Ce service ne nécessite pas de clef d'API dans sa version beta.</p>
+<h2 id="api-version-beta">API (version beta)</h2>
+<h3 id="url-de-developpement">URL de dévéloppement</h3>
+<p>http://apicarto-dev.sgmap.fr/cadastre</p>
+<h3 id="croisement-geojson-couche-du-cadastre">Croisement geojson couche du cadastre</h3>
+<p><strong>URL</strong> : http://apicarto-dev.sgmap.fr/cadastre</p>
+<p><strong>Methode</strong> : POST</p>
+<p><strong>Param</strong> : geom</p>
+<p><strong>Authenfication nécessaire</strong> : non</p>
+<p><strong>Réponse</strong> :</p>
+<ul>
+<li><strong>Code HTTP</strong> :  200</li>
+<li><strong>JSON</strong> :</li>
+</ul>
+<pre><code>  {&quot;type&quot;:&quot;FeatureCollection&quot;,&quot;features&quot;:
+    [{&quot;type&quot;:&quot;Feature&quot;,&quot;geometry&quot;:
+      {&quot;type&quot;:&quot;MultiPolygon&quot;,
+      &quot;coordinates&quot;:[...]},
+      &quot;properties&quot;:{&quot;surface_intersection&quot;:&quot;...&quot;,
+                    &quot;surface_parcelle&quot;:...,
+                    &quot;numero&quot;:&quot;XXXX&quot;,
+                    &quot;feuille&quot;:X,
+                    &quot;section&quot;:&quot;XX&quot;,
+                    &quot;code_dep&quot;:&quot;XX&quot;,
+                    &quot;nom_com&quot;:&quot;X&quot;,
+                    &quot;code_com&quot;:&quot;XXX&quot;,
+                    &quot;code_arr&quot;:&quot;XXX&quot;}
+      }]
+  }
+</code></pre>
+
+<p>Le paramètre geom est un geojson valide qui permettra de récupérer un geojson avec les polygones des parcelles cadastrales et calcule la surface de la parcelle, et la surface de l'intersection entre la parcelle et le geojson. Les autres informations conernent les données qui permettent l'identification de la parcelle.</p>
+<h3 id="exemple-avec-jquery">Exemple avec Jquery</h3>
+<p>On considère qu'il y a une instance de Leaflet est active sur la page.</p>
+<p>La variable data contient un objet geojson qui est transformer en Json par la fonction JSON.stringify.</p>
+<p>Dans le callback, on affiche les parcelles concernées sur la carte leaflet an ajoutant un layers leaflet.</p>
+<pre><code class="javascript">$('#testcadastre').click(function() {
+  return $.post(&quot;http://apicarto.coremaps.com/cadastre&quot;, {
+    contentType: &quot;application/json&quot;,
+    dataType: 'json',
+    geom: JSON.stringify(data)
+  }).done(function(data) {
+    var layer;
+    map.removeLayer(data);
+    $('#parcelle-info').html = &quot;&quot;;
+    layer = L.geoJson(data, {
+      onEachFeature: onEachFeature,
+      color: &quot;#ff0000&quot;
+    }).addTo(map);
+  });
+});
+onEachFeature = function(feature, layer) {
+  $('#parcelle-info tbody:last').after('&lt;tr&gt;commune:' + feature.properties.nom_com + '&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;'
+   + feature.properties.numero + '&lt;/td&gt;&lt;td&gt;' + feature.properties.feuille + '&lt;/td&gt;&lt;td&gt;' + feature.properties.section + '&lt;/td&gt;&lt;td&gt;' + feature.properties.surface_intersection + '&lt;/td&gt;&lt;/tr&gt;');
+  layer.bindPopup('surface parcelle : ' + feature.properties.surface_parcelle + '&lt;br&gt;');
+};
+</code></pre></div>
             
         </div>
 
